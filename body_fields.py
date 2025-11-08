@@ -6,6 +6,10 @@ from pydantic import BaseModel, Field
 
 app = FastAPI()
 
+class Image(BaseModel):
+    url: str
+    name: str
+
 class Item(BaseModel):
     name: str
     description: str | None = Field(
@@ -15,6 +19,7 @@ class Item(BaseModel):
     tax: float | None = None
     #tags: list[str] = []
     tags: set[str] = set() #as set
+    image: Image | None = None
 
 @app.put("/items/{item_id}")
 async def update_item(item_id: int, item: Annotated[Item, Body(embed=True)]):
