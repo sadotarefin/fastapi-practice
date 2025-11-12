@@ -1,14 +1,14 @@
-from typing import Any
 from fastapi import FastAPI, Response
 from pydantic import BaseModel, EmailStr
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
+from typing import Any
 
 app = FastAPI()
 
 class Item(BaseModel):
     name: str
     description: str | None = None
-    price: float
+    price: float = 10.5
     tax: float | None = None
     tags: list[str] = []
 
@@ -18,30 +18,47 @@ class UserIn(BaseModel):
     email: EmailStr
     full_name: str | None = None
 
-class UserOut(BaseModel):
-    username: str
-    email: EmailStr
-    full_name: str | None = None
+items = {
+    "foo": { "name": "Foo", "price": 100},
+    "bar": { "name": "Bar", "price": 200, "description": "Bar Projedt", "price": 63, "tax": 120},
+    "buz": { "name": "Baz", "price": 100, "description": None,  "price": 63, "tax": 12, "tags": ['t1']}
+}
 
 @app.post("/items/")
-async def create_item(item: Item) -> Item:
+async def create_item(item: Item) -> Item: 
     return item
 
-@app.get("/items/", response_model=list[Item], response_model_exclude_unset=True, response_model_exclude={"tax"})
-#async def read_items() -> list[Item]:
+@app.get("/items/{item_id}", response_model=Item, response_model_exclude={"tags"})
+async def read_item(item_id: str):
+    return items[item_id]
+
+@app.get("/items/", response_model=list[Item], 
+         response_model_exclude_unset=True,
+         response_model_exclude={"tax"})
 async def read_items() -> Any:
     return [
-        Item(name="Product 1", price=43.10),
-        Item(name="Product x", price="2405", tags=["good", "better"], tax=12.4)
+        { "name": "Foo", "price": 100},
+        { "name": "Bar", "description": "Bar Projedt", "tax": 120}
     ]
 
-@app.post("/user/", response_model=UserOut)
-async def create_user(user: UserIn) -> Any:
+@app.put("/items/{item_id}", response_model=Item)
+async def update_item(item_id: int, item: Item):
+    return {
+        "item_id": item_id,
+        "name": item.name,
+        "price": 120.00
+    }
+
+@app.post("/user/")
+async def create_user(user: UserIn):
     return user
 
-
-@app.get("/portal/")
-async def get_portal(teleport: bool = False) -> Response:
+@app.get("/portal", response_model=None)
+async def get_port(teleport: bool = False, json: bool = False) -> Response | dict:
     if teleport:
-        return RedirectResponse(url="www.youtube.com")
-    return JSONResponse(content={"message": "dasfasdf"})
+        return RedirectResponse(url="https://www.youtube.com")
+    if json:
+        return JSONResponse(content={"msg": "helloworl"})
+    return {"asdfadsf": "dafasdf"}
+
+
