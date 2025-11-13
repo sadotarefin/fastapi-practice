@@ -28,13 +28,13 @@ items = {
 async def create_item(item: Item) -> Item: 
     return item
 
-@app.get("/items/{item_id}", response_model=Item, response_model_exclude={"tags"})
+@app.get("/items/{item_id}", response_model=Item, response_model_exclude={"tags"}) #this exclude works
 async def read_item(item_id: str):
     return items[item_id]
 
 @app.get("/items/", response_model=list[Item], 
          response_model_exclude_unset=True,
-         response_model_exclude={"tax"})
+         response_model_exclude={"tax"}) #response_mode_exclude does not work for list items
 async def read_items() -> Any:
     return [
         { "name": "Foo", "price": 100},
