@@ -6,6 +6,8 @@ app = FastAPI()
 class InternalError(Exception):
     pass
 
+@app.exception_handler
+
 def get_username():
     try:
         yield "Rick" #simulate getting current username
