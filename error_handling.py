@@ -49,7 +49,7 @@ items= {
     'foo': {'name': "product 1", "code": 1}
 }
 
-@app.get("/items/{item_id}")
+@app.get("/items/{item_id}", summary="Read an item")
 async def read_items(item_id: str, name: int | None = None):
     if item_id not in items:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"error": "item not found"}, headers={"asdf":"asdf"})
@@ -57,6 +57,15 @@ async def read_items(item_id: str, name: int | None = None):
         raise UnicornException(name = name)
     return {"item_id": item_id, "item": Item(**items[item_id])}
 
-@app.post("/items/")
+@app.post("/items/", tags=["myitems"])
 async def create_item(item: Item):
+    """
+    Create an item with all the information:
+
+    - **name**: each item must have a name
+    - **description**: a long description
+    - **price**: required
+    - **tax**: if the item doesn't have tax, you can omit this
+    - **tags**: a set of unique tag strings for this item
+    """
     return item
