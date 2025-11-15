@@ -1,3 +1,4 @@
 pip install python-multipart
 pip install pyjwt
 pip install "pwdlib[argon2]"
+pip install sqlmodel
